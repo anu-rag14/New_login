@@ -31,10 +31,10 @@ def send_otp(name,number):
 	rand = random.randint(1000,9999)
 
 	authkey = "125195AvX4LUlVf57dcd941"
-	mobiles = "8269936970"
+	mobiles = str(number)
 	message = "Dear " +str(name)+",welcome to CODENICELY this is the one time password "+str(rand)+" for login"
 	sender = "CODNIC"
-	route = "1"
+	route = "4"
 
 
 	values = {
