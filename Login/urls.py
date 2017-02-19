@@ -16,8 +16,12 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from login.views import login_home
+from login.views import login_check
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^login/$', login_home),
+    url(r'^verify/$', login_check),
+
 ]
+

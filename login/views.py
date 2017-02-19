@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import login_data
 import requests
 import random
-import urllib # Python URL functions
+import urllib
 import urllib2
 
 # Create your views here.
@@ -13,16 +13,42 @@ def login_home(request):
 	if request.method=='GET':
 		return render(request,"index.html",{})
 	else:
-		name=request.POST.get("name")
-		number=request.POST.get("number")
+		try:
 
-		p=login_data.objects.create(name=name,number=number)
+		    name=request.POST.get("name") 
+		    number=request.POST.get("number")
 
-		send_otp(name,number)
+		    random_number=send_otp(name,number)
+
+		    login_data.objects.create(name=name,number=number,otp=random_number)
+
+		    return render(request,"OtpPage.html",{"number" : number})
+		    
+		except Exception,e:
+			print "Error"
 
 
-		return render(request,"index.html",{}) 
+@csrf_exempt
+def login_check(request):
 
+	if request.method=="GET":
+
+		return render(request,"OtpPage.html",{})
+
+	if request.method=="POST":
+		otp_from_user=request.POST.get("otp")
+		number_from_otp=request.POST.get("number")
+
+		try:
+			print "ff"
+			otp_from_db= login_data.objects.get(number=number_from_otp)
+			print "Done"
+			if otp_from_db.otp==otp_from_user:
+				print "Login Successful"
+			return render(request,'index.html')
+		except Exception,e:
+			print "Error"
+			return render(request,"OtpPage.html")
 
 
 
@@ -32,7 +58,7 @@ def send_otp(name,number):
 
 	authkey = "125195AvX4LUlVf57dcd941"
 	mobiles = str(number)
-	message = "Dear " +str(name)+",welcome to CODENICELY this is the one time password "+str(rand)+" for login"
+	message = "Dear " +str(name)+", welcome to CODENICELY this is the one time password "+str(rand)+" for login"
 	sender = "CODNIC"
 	route = "4"
 
@@ -54,5 +80,4 @@ def send_otp(name,number):
 
 	output = response.read() # Get Response
 
-	print output
 	return rand
